@@ -1,0 +1,21 @@
+{
+  "name": "v-block.lite",
+  "version": "1.0.0",
+  "description": "The v-block library which eeduce project dependencies.",
+  "main": "index.js",
+  "author": {
+    "name": "zonebond",
+    "email": "zonebond@126.com"
+  },
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "build": "node ./node_modules/project-scripts build && cd ./build && ../project-scripts/bash/relink.sh"
+  },
+  "devDependencies": {
+    "fs-extra": "^4.0.2"
+  },
+  "dependencies": {
+    "prop-types": "^15.5.10"
+  }
+}
