@@ -4,14 +4,25 @@
 // library
 import React, {PureComponent, isValidElement, Children} from 'react'
 import PropTypes from 'prop-types';
+import prefixAll from 'inline-style-prefix-all';
+
 // utils
-import {pixels, assignment, classnames, mergeProps} from '../../common/utils'
+import {pixels, assignment, classnames, mergeProps, HackStyleSheet} from '../../common'
+
+// hack stylesheet
+HackStyleSheet(`[data-v-block-layout-group] { 
+  display: -webkit-box !important; 
+  display: -moz-box !important; 
+  display: -ms-flexbox !important; 
+  display: -webkit-flex !important; 
+  display: flex !important; 
+}`);
 
 // enumeration
 const main_axis  = ['flex-start', 'flex-end', 'center', 'space-around', 'space-between'];
 const cross_axis = ['flex-start', 'flex-end', 'center', 'stretch'];
 
-const base_style        = {display: 'flex'};
+const base_style        = {};
 const base_hgroup_style = {...base_style, justifyContent: 'flex-start', alignItems: 'stretch'};
 const base_vgroup_style = {...base_style, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'stretch'};
 
@@ -52,7 +63,8 @@ function commitProperties(props, base) {
     free: free ? null : null
   });
 
-  return [{...measured, ...style}, others];
+  const prefixed = prefixAll(measured);
+  return [{...prefixed, ...style}, others];
 }
 
 /**
@@ -97,12 +109,12 @@ export class Group extends PureComponent {
 
   render() {
     const props           = this.props;
-    const cls             = classnames('group', props.className);
+    const cls             = classnames('v-block-layout-group', props.className);
     const gap             = pixels(props.gap);
     const nextProps       = {style: assignment(null, {marginRight: gap})};
     const [style, others] = commitProperties(props, {...base_style, flexWrap: 'wrap'});
     return (
-      <div className={cls} style={style} {...others}>
+      <div className={cls} style={style} {...others} data-v-block-layout-group>
         {gap ? renderChildren(props.children, nextProps) : props.children}
       </div>
     )
@@ -136,12 +148,12 @@ export class HGroup extends PureComponent {
 
   render() {
     const props           = this.props;
-    const cls             = classnames('group horizontal', props.className);
+    const cls             = classnames('v-block-layout-group horizontal', props.className);
     const gap             = pixels(props.gap);
     const nextProps       = {style: assignment(null, {marginRight: gap})};
     const [style, others] = commitProperties(props, base_hgroup_style);
     return (
-      <div className={cls} style={style} {...others}>
+      <div className={cls} style={style} {...others} data-v-block-layout-group>
         {gap ? renderChildren(props.children, nextProps) : props.children}
       </div>
     )
@@ -170,7 +182,7 @@ export class VGroup extends PureComponent {
 
   render() {
     const props                                      = this.props;
-    const cls                                        = classnames('group vertical', props.className);
+    const cls                                        = classnames('v-block-layout-group vertical', props.className);
     const gap                                        = pixels(props.gap);
     const nextProps                                  = {style: assignment(null, {marginBottom: gap})};
     const {horizontalAlign, verticalAlign, ...other} = props;
@@ -179,7 +191,7 @@ export class VGroup extends PureComponent {
       verticalAlign: horizontalAlign, ...other
     }, base_vgroup_style);
     return (
-      <div className={cls} style={style} {...others}>
+      <div className={cls} style={style} {...others} data-v-block-layout-group>
         {gap ? renderChildren(props.children, nextProps) : props.children}
       </div>
     )

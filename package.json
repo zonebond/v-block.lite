@@ -16,6 +16,7 @@
     "fs-extra": "^4.0.2"
   },
   "dependencies": {
+    "inline-style-prefix-all": "^2.0.2",
     "prop-types": "^15.5.10"
   }
 }

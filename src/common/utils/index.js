@@ -1,5 +1,5 @@
 import {classnames} from './classnames'
-import {pixels, literal, assignment, TimeMate, DuffsDevice} from './tools'
+import {pixels, literal, assignment, TimeMate, DuffsDevice, HackStyleSheet} from './tools'
 import {merge, mergeProps} from './merge'
 
 export {
@@ -10,5 +10,6 @@ export {
   literal,
   assignment,
   TimeMate,
-  DuffsDevice
+  DuffsDevice,
+  HackStyleSheet
 }

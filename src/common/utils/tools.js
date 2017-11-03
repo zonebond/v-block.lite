@@ -154,5 +154,20 @@ function DuffsDevice(list, process) {
   }
 }
 
+// hack stylesheet
+const doc = document;
+const HackStyleSheet = css => {
+    var style = doc.createElement('style');
+    style.type = 'text/css';
+    style.rel = 'stylesheet';
+    try {
+        style.appendChild(doc.createTextNode(css));
+    }
+    catch (ex) {
+        style.styleSheet.cssText = css;
+    }
+    doc.getElementsByTagName("head")[0].appendChild(style);
+}
+
 // expose
-export {pixels, literal, assignment, TimeMate, isObject, DuffsDevice};
+export {pixels, literal, assignment, TimeMate, isObject, DuffsDevice, HackStyleSheet};
