@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import prefixAll from 'inline-style-prefix-all';
 
 // utils
-import {pixels, assignment, classnames, mergeProps, HackStyleSheet} from '../../common'
+import {pixels, assignment, classnames, mergeProps, HackStyleSheet} from 'v-block.lite/common'
 
 // hack stylesheet
 HackStyleSheet(`[data-v-block-layout-group] { 
@@ -23,7 +23,7 @@ const main_axis  = ['flex-start', 'flex-end', 'center', 'space-around', 'space-b
 const cross_axis = ['flex-start', 'flex-end', 'center', 'stretch'];
 
 const base_style        = {};
-const base_hgroup_style = {...base_style, justifyContent: 'flex-start', alignItems: 'stretch'};
+const base_hgroup_style = {...base_style, flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'stretch'};
 const base_vgroup_style = {...base_style, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'stretch'};
 
 const isStyleInvalidate = (prev, next) => {

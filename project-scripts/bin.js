@@ -1,6 +1,8 @@
 const path    = require('path');
 const entries = require('./utils/entries');
 
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+
 module.exports = {
   DebugMode: false,
   entry: (entry) => {
@@ -32,6 +34,11 @@ module.exports = {
         output: {comments: false}
       }
     }
+    // webpack-bundle-analyzer
+    plugins.push(new BundleAnalyzerPlugin());
   },
-  externals: ['react']
+  externals: [
+    'react', 
+    'v-block.lite/common', 'v-block.lite/layout', 'v-block.lite/library'
+  ]
 }
