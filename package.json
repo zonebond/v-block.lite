@@ -21,7 +21,6 @@
     "prop-types": "^15.5.10"
   },
   "peerDependencies": {
-    "react": "^0.11.0-rc1",
-    "v-block.lite": "^1.0.0"
+    "react": ">=0.11.0"
   }
 }

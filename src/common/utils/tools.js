@@ -30,7 +30,6 @@ const literal = (value, defaultValue) => {
   return NotNull(value) ? (typeof value === 'string' ? value : pixels(value)) : defaultValue;
 };
 
-
 /**
  * merge object with assign props which value must be available
  * @param target
@@ -155,19 +154,108 @@ function DuffsDevice(list, process) {
 }
 
 // hack stylesheet
-const doc = document;
-const HackStyleSheet = css => {
-    var style = doc.createElement('style');
-    style.type = 'text/css';
-    style.rel = 'stylesheet';
-    try {
-        style.appendChild(doc.createTextNode(css));
-    }
-    catch (ex) {
-        style.styleSheet.cssText = css;
-    }
-    doc.getElementsByTagName("head")[0].appendChild(style);
+const doc = window.document || null;
+const HackStyleSheet = doc ? css => {
+      var style = doc.createElement('style');
+      style.type = 'text/css';
+      style.rel = 'stylesheet';
+      try {
+          style.appendChild(doc.createTextNode(css));
+      }
+      catch (ex) {
+          style.styleSheet.cssText = css;
+      }
+      doc.getElementsByTagName("head")[0].appendChild(style);
+  }: null;
+
+
+const required = (name) => { throw new Error(`Missing parameter${name ? ` [${name}]` : ``}`) };
+
+function refs(...args) {
+
+  const first_arg     = args[0];
+  const has_arguments = args.length === 1 && typeof first_arg === 'string' ? true : false;
+
+  const decorator = (target, name, descriptor) => {
+		const ref_name = has_arguments ? first_arg : `__${name}__`;
+
+		const { componentWillMount: oldWillMount, componentWillUnmount: oldWillUnmount } = target;
+
+		target.componentWillMount = function() {
+			this[`${name}Refs`] = ($self) => {
+				this[ref_name] = $self;
+			};
+			typeof oldWillMount === 'function' && oldWillMount.call(this);
+		};
+
+
+		target.componentWillUnmount = function() {
+			typeof oldWillUnmount === 'function' && oldWillUnmount.call(this);
+			// this[`${name}Refs`] = null;
+		};
+
+    descriptor = {
+      configurable: false,
+      enumerable: true,
+      get: function() {
+				return this[ref_name];
+      }
+    };
+
+    return descriptor;
+  }
+
+  return has_arguments ? decorator : decorator.call(null, ...args);
+};
+
+function RamBoolean() {
+	return Math.random() * 1 > 0.5 ? true : false;
 }
 
+const find = (handles, target) => {
+	let index = -1, len = handles.length;
+	for(let i = 0; i < len; i++) {
+		if(handles[i] === target) {
+			index = i;
+			break;
+		}
+	}
+	return index;
+}
+
+class EventEmitter {
+	__handles__ = {};
+
+	when(type = required('type'), handle = required('handle')) {
+		const handles = this.__handles__[type];
+		if(!handles) {
+			this.__handles__[type] = [handle];
+		} else {
+			handles.push(handle);
+		}
+	}
+
+	emit(type = required('type'), data) {
+		const handles = this.__handles__[type];
+		if(Array.isArray(handles)) {
+			handles.forEach(hadnle => typeof hadnle === 'function' && hadnle(data, this));
+		}
+	}
+
+	drop(type = required('type'), handle = required('handle')) {
+		const handles = this.__handles__[type];
+		if(handles){
+			const index = find(handles, handle);
+			if(index !== -1) {
+				handles.splice(index, 1);
+			}
+		}
+	}
+}
+
+
 // expose
-export {pixels, literal, assignment, TimeMate, isObject, DuffsDevice, HackStyleSheet};
+export {
+  pixels, literal, assignment, TimeMate, isObject, DuffsDevice, HackStyleSheet,
+  refs, RamBoolean, EventEmitter
+};

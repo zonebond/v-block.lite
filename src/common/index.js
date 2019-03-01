@@ -5,13 +5,12 @@ import co from './co-generator'
 import * as block from './block'
 import {RESTish, PM} from './rest-http'
 import * as ServiceTools from './service-tools'
-import {classnames, pixels, literal, assignment, merge, mergeProps, DuffsDevice, HackStyleSheet} from './utils'
-
+import {classnames, pixels, literal, assignment, merge, mergeProps, DuffsDevice, HackStyleSheet, refs, RamBoolean, EventEmitter} from './utils'
 
 export {
   co,
   block,
   ServiceTools,
-  classnames, pixels, literal, assignment, merge, mergeProps, DuffsDevice, HackStyleSheet,
+  classnames, pixels, literal, assignment, merge, mergeProps, DuffsDevice, HackStyleSheet, refs, RamBoolean, EventEmitter,
   RESTish, PM,
 }

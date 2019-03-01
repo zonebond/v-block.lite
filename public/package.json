@@ -1,6 +1,6 @@
 {
   "name": "v-block.lite",
-  "version": "1.0.3-rc",
+  "version": "1.2.3-rc",
   "description": "The v-block library which eeduce project dependencies.",
   "main": "index.js",
   "author": {
@@ -13,7 +13,6 @@
     "prop-types": "^15.5.10"
   },
   "peerDependencies": {
-    "react": "^0.11.0-rc1",
-    "v-block.lite": "^1.0.0"
+    "react": ">=0.11.0"
   }
 }

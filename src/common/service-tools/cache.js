@@ -33,7 +33,7 @@ export default function cached() {
           onwer[cache_tag] = {lastUpdateTimestamp: Date.now(), data: data};
           resolve(data);
         });
-      })
+      });
     };
 
     return target;

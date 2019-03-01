@@ -2,20 +2,29 @@
  * Created by zonebond on 2017/3/29.
  */
 // library
-import React, {PureComponent, isValidElement, Children} from 'react'
+import React, {Component, isValidElement, Children, cloneElement} from 'react'
 import PropTypes from 'prop-types';
 import prefixAll from 'inline-style-prefix-all';
 
+// const prefixAll = (value) => value;
+
 // utils
-import {pixels, assignment, classnames, mergeProps, HackStyleSheet} from 'v-block.lite/common'
+import {pixels, assignment, classnames, HackStyleSheet} from 'v-block.lite/common'
 
 // hack stylesheet
 HackStyleSheet(`[data-v-block-layout-group] { 
-  display: -webkit-box !important; 
-  display: -moz-box !important; 
-  display: -ms-flexbox !important; 
-  display: -webkit-flex !important; 
-  display: flex !important; 
+  display: -webkit-box; 
+  display: -moz-box; 
+  display: -ms-flexbox; 
+  display: -webkit-flex; 
+  display: flex; 
+}`);
+
+// hack stylesheet
+HackStyleSheet(`[data-v-block-layout-group-spacer] { 
+  display: inline-block; 
+  pointer-events: none; 
+  user-select: none;
 }`);
 
 // enumeration
@@ -47,7 +56,15 @@ const isStyleInvalidate = (prev, next) => {
 };
 
 function commitProperties(props, base) {
-  const {style, width, height, flex, horizontalAlign, verticalAlign, padding, overflow, horizontalGap, verticalGap, gap, free, ...others} = props;
+  const {
+    style, 
+    width, height, 
+    flex,
+    horizontalAlign, verticalAlign, 
+    padding, overflow, 
+    horizontalGap, verticalGap, gap, 
+    free, ...others
+  } = props;
 
   const measured = assignment(base, {
     width: pixels(width),
@@ -55,7 +72,7 @@ function commitProperties(props, base) {
     justifyContent: horizontalAlign,
     alignItems: verticalAlign,
     padding: padding,
-    flex: flex ? [{flex: (typeof flex === "string" ? flex : '1 0 0'), overflow: 'auto'}] : null,
+    flex: flex ? [{flex: (typeof flex === "string" ? flex : '1 0 0%'), overflow: 'auto'}] : null,
     overflow: overflow,
     horizontalGap: horizontalGap ? null : null,
     verticalGap: verticalGap ? null : null,
@@ -67,30 +84,36 @@ function commitProperties(props, base) {
   return [{...prefixed, ...style}, others];
 }
 
+function Spacer(props) {
+  return <span data-v-block-layout-group-spacer="" {...props}></span>
+}
+
 /**
  * render children
  * @param children
  * @param nextProps
  * @returns {Array}
  */
-function renderChildren(children, nextProps) {
-  const last = Children.count(children) - 1;
-  return Children.map(children, (child, idx) => {
-    return idx !== last && isValidElement(child) ? wrappedChild(child, mergeProps(child.props, nextProps)) : child
-  });
-}
+function renderChildren(children, spacer) {
+  const nums = Children.count(children);
+  
+  if(nums === 1) {
+    return children;
+  }
 
-function wrappedChild(element, props) {
-	/**
-	const primitive_render = element.type.prototype.render;
-	element.type.prototype.render = function(){
-		const child_root = primitive_render.call(this)
-		console.log(child_root, this.props, style);
-		return React.cloneElement(child_root, {style: {...child_root.props.style, ...style}});
-	};
-	*/
-    
-	return <element.type {...props}/>
+  const last = nums - 1;
+  const result = [];
+  Children.forEach(children, (child, index) => {
+    if(!child) return;
+
+    result.push(cloneElement(child, { ...child.props, key: child.key || index }));
+    if(index !== last) {
+      result.push(isValidElement(spacer) 
+                ? cloneElement(spacer, { key: '.gap/.'+index }) 
+                : <Spacer {...spacer} key={'.gap/.'+index}/>);
+    }
+  });
+  return result;
 }
 
 /**
@@ -99,7 +122,7 @@ function wrappedChild(element, props) {
  * @returns WrappedComponent
  * @constructor
  */
-export class Group extends PureComponent {
+export class Group extends Component {
   shouldComponentUpdate(nextProps) {
     if (isStyleInvalidate(this.props.style, nextProps.style))
       return true;
@@ -108,14 +131,13 @@ export class Group extends PureComponent {
   }
 
   render() {
-    const props           = this.props;
+    const {children, gap, ...props}  = this.props;
     const cls             = classnames('v-block-layout-group', props.className);
-    const gap             = pixels(props.gap);
-    const nextProps       = {style: assignment(null, {marginRight: gap})};
+    const spacer          = isValidElement(gap) ? gap : { style: assignment(null, { marginRight: pixels(gap) }) };
     const [style, others] = commitProperties(props, {...base_style, flexWrap: 'wrap'});
     return (
-      <div className={cls} style={style} {...others} data-v-block-layout-group>
-        {gap ? renderChildren(props.children, nextProps) : props.children}
+      <div className={cls} style={style} {...others} data-v-block-layout-group="">
+        {gap ? renderChildren(children, spacer) : children}
       </div>
     )
   }
@@ -127,7 +149,7 @@ Group.propTypes = {
   flex: PropTypes.oneOfType([PropTypes.bool, PropTypes.string, PropTypes.number]),
   horizontalAlign: PropTypes.oneOf(main_axis),
   verticalAlign: PropTypes.oneOf(cross_axis),
-  gap: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  gap: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.element]),
   padding: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
   overflow: PropTypes.string
 };
@@ -138,7 +160,7 @@ Group.propTypes = {
  * @returns WrappedComponent
  * @constructor
  */
-export class HGroup extends PureComponent {
+export class HGroup extends Component {
   shouldComponentUpdate(nextProps) {
     if (isStyleInvalidate(this.props.style, nextProps.style))
       return true;
@@ -147,14 +169,13 @@ export class HGroup extends PureComponent {
   }
 
   render() {
-    const props           = this.props;
+    const {children, gap, ...props} = this.props;
     const cls             = classnames('v-block-layout-group horizontal', props.className);
-    const gap             = pixels(props.gap);
-    const nextProps       = {style: assignment(null, {marginRight: gap})};
+    const spacer          = isValidElement(gap) ? gap : { style: assignment(null, { marginRight: pixels(gap) }) };
     const [style, others] = commitProperties(props, base_hgroup_style);
     return (
-      <div className={cls} style={style} {...others} data-v-block-layout-group>
-        {gap ? renderChildren(props.children, nextProps) : props.children}
+      <div className={cls} style={style} {...others} data-v-block-layout-group="">
+        {gap ? renderChildren(children, spacer) : children}
       </div>
     )
   }
@@ -172,7 +193,7 @@ HGroup.propTypes = {
  * @returns WrappedComponent
  * @constructor
  */
-export class VGroup extends PureComponent {
+export class VGroup extends Component {
   shouldComponentUpdate(nextProps) {
     if (isStyleInvalidate(this.props.style, nextProps.style))
       return true;
@@ -181,18 +202,17 @@ export class VGroup extends PureComponent {
   }
 
   render() {
-    const props                                      = this.props;
+    const {children, gap, ...props}                  = this.props;
     const cls                                        = classnames('v-block-layout-group vertical', props.className);
-    const gap                                        = pixels(props.gap);
-    const nextProps                                  = {style: assignment(null, {marginBottom: gap})};
+    const spacer = isValidElement(gap) ? gap : { style: assignment(null, { marginBottom: pixels(gap) }) };
     const {horizontalAlign, verticalAlign, ...other} = props;
     const [style, others]                            = commitProperties({
       horizontalAlign: verticalAlign,
       verticalAlign: horizontalAlign, ...other
     }, base_vgroup_style);
     return (
-      <div className={cls} style={style} {...others} data-v-block-layout-group>
-        {gap ? renderChildren(props.children, nextProps) : props.children}
+      <div className={cls} style={style} {...others} data-v-block-layout-group="">
+        {gap ? renderChildren(children, spacer) : children}
       </div>
     )
   }

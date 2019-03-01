@@ -35,10 +35,10 @@ module.exports = {
       }
     }
     // webpack-bundle-analyzer
-    plugins.push(new BundleAnalyzerPlugin());
+    // plugins.push(new BundleAnalyzerPlugin());
   },
   externals: [
-    'react', 
+    'react', 'prop-types',
     'v-block.lite/common', 'v-block.lite/layout', 'v-block.lite/library'
   ]
 }
