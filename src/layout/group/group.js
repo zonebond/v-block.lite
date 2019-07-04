@@ -4,12 +4,13 @@
 // library
 import React, {Component, isValidElement, Children, cloneElement} from 'react'
 import PropTypes from 'prop-types';
+// utils
+import {pixels, assignment, classnames, HackStyleSheet} from 'v-block.lite/common'
 import prefixAll from 'inline-style-prefix-all';
 
 // const prefixAll = (value) => value;
 
-// utils
-import {pixels, assignment, classnames, HackStyleSheet} from 'v-block.lite/common'
+const symbol = `#*0x4DAC4$#`;
 
 // hack stylesheet
 HackStyleSheet(`[data-v-block-layout-group] { 
@@ -106,10 +107,11 @@ function renderChildren(children, spacer) {
   Children.forEach(children, (child, index) => {
     if(!child) return;
 
-    result.push(cloneElement(child, { ...child.props, key: child.key || index }));
+    result.push(cloneElement(child, { ...child.props, key: child.key || symbol + index }));
+
     if(index !== last) {
       result.push(isValidElement(spacer) 
-                ? cloneElement(spacer, { key: '.gap/.'+index }) 
+                ? cloneElement(spacer, { key: '.gap/.'+index })
                 : <Spacer {...spacer} key={'.gap/.'+index}/>);
     }
   });

@@ -14,6 +14,7 @@
   },
   "devDependencies": {
     "fs-extra": "^4.0.2",
+    "project-scripts": "^1.1.1-rc",
     "webpack-bundle-analyzer": "^2.9.1"
   },
   "dependencies": {
