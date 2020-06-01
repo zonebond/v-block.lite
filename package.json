@@ -13,9 +13,8 @@
     "build": "node ./node_modules/project-scripts build && cd ./build && ../project-scripts/bash/relink.sh"
   },
   "devDependencies": {
-    "fs-extra": "^8.1.0",
-    "project-scripts": "^1.1.1-rc",
-    "webpack-bundle-analyzer": "^3.3.2"
+    "fs-extra": "^4.0.2",
+    "webpack-bundle-analyzer": "^2.9.1"
   },
   "dependencies": {
     "inline-style-prefix-all": "^2.0.2",
