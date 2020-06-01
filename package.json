@@ -1,7 +1,7 @@
 {
   "name": "v-block.lite",
   "version": "1.0.0",
-  "description": "The v-block library which eeduce project dependencies.",
+  "description": "The v-block library which reduce project dependencies.",
   "main": "index.js",
   "author": {
     "name": "zonebond",
@@ -13,8 +13,7 @@
     "build": "node ./node_modules/project-scripts build && cd ./build && ../project-scripts/bash/relink.sh"
   },
   "devDependencies": {
-    "fs-extra": "^4.0.2",
-    "webpack-bundle-analyzer": "^2.9.1"
+    "fs-extra": "^4.0.2"
   },
   "dependencies": {
     "inline-style-prefix-all": "^2.0.2",
