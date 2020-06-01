@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "fs-extra": "^4.0.2",
-    "webpack-bundle-analyzer": "^2.9.1"
+    "webpack-bundle-analyzer": "^3.8.0"
   },
   "dependencies": {
     "inline-style-prefix-all": "^2.0.2",
